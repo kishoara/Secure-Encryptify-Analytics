@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Secure Salary Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <div class="header-content">
+          <svg
+            class="header-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+          >
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <h1 class="header-title">Secure Salary Dashboard</h1>
+        </div>
+        <p class="header-subtitle">
+          AES-256 Encrypted Data Storage & Analytics
+        </p>
+      </div>
+
+      <!-- Notification -->
+      <div id="notification" class="notification hidden">
+        <svg
+          class="notification-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+        >
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span id="notification-text"></span>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab-button active" data-tab="upload">Upload</button>
+        <button class="tab-button" data-tab="encrypt">Encrypt</button>
+        <button class="tab-button" data-tab="dashboard">Dashboard</button>
+      </div>
+
+      <!-- Upload Tab -->
+      <div id="upload-tab" class="tab-content active">
+        <div class="card">
+          <div class="upload-container">
+            <svg
+              class="upload-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <h2 class="upload-title">Upload Salary Dataset</h2>
+            <p class="upload-description">
+              Upload your CSV file containing salary data. Sensitive fields will
+              be encrypted before storage.
+            </p>
+            <label class="upload-button">
+              <input
+                type="file"
+                id="file-input"
+                accept=".csv"
+                class="file-input"
+              />
+              Choose CSV File
+            </label>
+            <div id="upload-success" class="upload-success hidden">
+              <p class="success-text">
+                ✓ <span id="records-count"></span> records loaded
+              </p>
+              <button id="continue-encrypt" class="secondary-button">
+                Continue to Encryption →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Encrypt Tab -->
+      <div id="encrypt-tab" class="tab-content">
+        <div class="card">
+          <div class="encrypt-container">
+            <div class="encrypt-header">
+              <svg
+                class="section-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <h2 class="section-title">Encrypt Sensitive Data</h2>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Encryption Key (AES-256)</label>
+              <div class="input-wrapper">
+                <input
+                  type="password"
+                  id="encryption-key"
+                  class="form-input"
+                  placeholder="Enter your secure encryption key"
+                />
+                <div class="input-actions">
+                  <button id="toggle-key" class="icon-button">
+                    <svg
+                      class="icon"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                    >
+                      <path
+                        d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                      ></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  </button>
+                  <button id="generate-key" class="generate-button">
+                    Generate
+                  </button>
+                </div>
+              </div>
+              <p class="form-help">
+                ⚠️ Save this key securely - you'll need it to decrypt the data
+              </p>
+            </div>
+
+            <div class="info-box">
+              <h3 class="info-title">Fields to be encrypted:</h3>
+              <ul class="info-list">
+                <li>• Salary (original currency)</li>
+                <li>• Salary in USD</li>
+                <li>• Job Title</li>
+              </ul>
+            </div>
+
+            <button id="encrypt-button" class="primary-button" disabled>
+              Encrypt Data
+            </button>
+
+            <button id="view-dashboard" class="secondary-button hidden">
+              View Dashboard →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Tab -->
+      <div id="dashboard-tab" class="tab-content">
+        <!-- Decrypt View -->
+        <div id="decrypt-view" class="card">
+          <div class="decrypt-container">
+            <svg
+              class="unlock-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+            >
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+            </svg>
+            <h2 class="decrypt-title">Decrypt Data to View Dashboard</h2>
+            <div class="form-group">
+              <label class="form-label">Enter Decryption Key</label>
+              <div class="input-wrapper">
+                <input
+                  type="password"
+                  id="decryption-key"
+                  class="form-input"
+                  placeholder="Enter your encryption key"
+                />
+                <button id="toggle-decrypt-key" class="icon-button">
+                  <svg
+                    class="icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <path
+                      d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                    ></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <button id="decrypt-button" class="success-button" disabled>
+              Decrypt & View Analytics
+            </button>
+          </div>
+        </div>
+
+        <!-- Analytics View -->
+        <div id="analytics-view" class="hidden">
+          <!-- Stats Cards -->
+          <div class="stats-grid">
+            <div class="stat-card stat-card-blue">
+              <div class="stat-content">
+                <div>
+                  <p class="stat-label">Total Records</p>
+                  <p class="stat-value" id="total-records">0</p>
+                </div>
+                <svg
+                  class="stat-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </div>
+            </div>
+
+            <div class="stat-card stat-card-green">
+              <div class="stat-content">
+                <div>
+                  <p class="stat-label">Average Salary</p>
+                  <p class="stat-value" id="avg-salary">$0K</p>
+                </div>
+                <svg
+                  class="stat-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                  <polyline points="17 6 23 6 23 12"></polyline>
+                </svg>
+              </div>
+            </div>
+
+            <div class="stat-card stat-card-purple">
+              <div class="stat-content">
+                <div>
+                  <p class="stat-label">Data Status</p>
+                  <p class="stat-value-text">🔒 Encrypted</p>
+                </div>
+                <svg
+                  class="stat-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <rect
+                    x="3"
+                    y="11"
+                    width="18"
+                    height="11"
+                    rx="2"
+                    ry="2"
+                  ></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts -->
+          <div class="charts-grid">
+            <div class="chart-card">
+              <h3 class="chart-title">
+                <svg
+                  class="chart-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                Avg Salary by Company Size
+              </h3>
+              <canvas id="company-size-chart"></canvas>
+            </div>
+
+            <div class="chart-card">
+              <h3 class="chart-title">
+                <svg
+                  class="chart-icon"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <line x1="12" y1="20" x2="12" y2="10"></line>
+                  <line x1="18" y1="20" x2="18" y2="4"></line>
+                  <line x1="6" y1="20" x2="6" y2="16"></line>
+                </svg>
+                Count by Experience Level
+              </h3>
+              <canvas id="experience-chart"></canvas>
+            </div>
+
+            <div class="chart-card chart-card-wide">
+              <h3 class="chart-title">Top 10 Highest Paying Jobs</h3>
+              <canvas id="top-jobs-chart"></canvas>
+            </div>
+
+            <div class="chart-card">
+              <h3 class="chart-title">Remote Work Distribution</h3>
+              <canvas id="remote-chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
