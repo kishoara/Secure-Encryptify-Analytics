@@ -149,7 +149,11 @@ http://localhost:3000/
 
 ## **Video View**
 
-> 
+
+
+https://github.com/user-attachments/assets/46d69b0c-edb3-4f9f-8121-1065e1684eb2
+
+
 
 ---
 
